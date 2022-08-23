@@ -1,6 +1,7 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { rules, schema } from "@ioc:Adonis/Core/Validator";
 import users from "App/Models/users";
+import Drive from "@ioc:Adonis/Core/Drive";
 
 export default class UsersController {
   public async list() {
@@ -11,6 +12,43 @@ export default class UsersController {
   public async findOne(ctx: HttpContextContract) {
     // const user = await users.all();
     return { users: ctx };
+  }
+  public async update({ request, response, auth }: HttpContextContract) {
+    const validations = await schema.create({
+      name: schema.string({}),
+      password: schema.string({}, [rules.confirmed()]),
+      surname: schema.string({}),
+    });
+    const data = await request.validate({ schema: validations });
+    const profile_pic = request.file("profile_pic", {
+      size: "2mb",
+      extnames: ["jpg", "png", "jpeg"],
+    });
+
+    if (!profile_pic) {
+      return;
+    }
+    if (!profile_pic.isValid) {
+      return profile_pic.errors;
+    }
+    await profile_pic.moveToDisk("./");
+    const fileUrl = profile_pic.fileName ? process.env.BACK_URL + await Drive.getUrl(profile_pic.fileName):null;
+
+
+    if (auth.user && fileUrl) {
+      const user = auth.user;
+      user.name = data.name;
+      user.surname = data.surname;
+      user.password = data.password;
+      user.profile_pic = fileUrl
+      await user.save();
+      return { user: user };
+    }
+    return response.status(400).send({
+      error: {
+        message: "User with provided credentials could not be found",
+      },
+    });
   }
 
   public async login({ request, response, auth }: HttpContextContract) {
@@ -24,13 +62,11 @@ export default class UsersController {
 
       return token.toJSON();
     } catch {
-      return response
-        .status(400)
-        .send({
-          error: {
-            message: "User with provided credentials could not be found",
-          },
-        });
+      return response.status(400).send({
+        error: {
+          message: "User with provided credentials could not be found",
+        },
+      });
     }
   }
 
