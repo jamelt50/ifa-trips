@@ -1,19 +1,17 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'trips'
+  protected tableName = 'cities'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id').primary()
-      table.integer('from_city_id')
-      table.integer('to_city_id')
-      table.integer('seats')
-      table.time('trip_time')
-      table.string('description')
-      table.dateTime('date')
-      table.integer('driver_id').unsigned().references('users.id')
-      table.decimal('price')
+      table.string('name',255)
+      table.bigInteger('code').primary()
+      table.string('code_departement',255)
+      table.string('code_region',255)
+      table.string('codes_postaux',255)
+      table.bigInteger('population')
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

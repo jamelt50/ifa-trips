@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column,hasOne,HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column,hasOne,HasOne } from '@ioc:Adonis/Lucid/Orm'
 import users from './users'
 import Trip from './Trip'
 
@@ -7,11 +7,16 @@ export default class Reservation extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @hasOne(() => users)
-  public passenger_id: HasOne<typeof users>
+  @column()
+  public passenger_id: number
+  @column()
+  public trip_id: number
 
-  @hasOne(() => Trip)
-  public trip_id: HasOne<typeof Trip>
+  @belongsTo(() => users,{localKey:"id",foreignKey:"passenger_id"})
+  public passenger: BelongsTo<typeof users>
+
+  @belongsTo(() => Trip,{localKey:"id",foreignKey:"trip_id"})
+  public trip: BelongsTo<typeof Trip>
 
   @column()
   public state:string 

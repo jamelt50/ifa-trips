@@ -28,4 +28,14 @@ Route.get('/users', 'UsersController.list').middleware('auth')
 Route.post('/profile/update', 'UsersController.update').middleware('auth')
 
 Route.get('/trips/search', 'TripsController.search')
+Route.post('/trips/create', 'TripsController.create').middleware('auth')
+Route.get('/trips/my-trips', 'TripsController.ownTrips').middleware('auth')
 Route.get('/trips/find/:id', 'TripsController.find')
+Route.get('/trips/:id/reservations', 'TripsController.reservations').middleware('auth')
+Route.post('/trips/reserve/:id', 'TripsController.reserve').middleware('auth')
+Route.post('/trips/cancel/:id', 'TripsController.changeState').middleware('auth')
+Route.post('/trips/accept/:id', 'TripsController.changeState').middleware('auth')
+
+
+Route.get('/reservations/my-reservations', 'ReservationsController.ownReservations').middleware('auth')
+Route.put('/reservations/cancel/:id', 'ReservationsController.cancel').middleware('auth')
