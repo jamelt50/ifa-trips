@@ -9,7 +9,8 @@ import { geoCity } from "App/Types/geoCity";
 export default class TripsController {
   public async search({ request }: HttpContextContract) {
     const data = request.qs();
-    const trips = await Trip.query().preload('driver')
+    const trips = await Trip.query()
+      .preload("driver")
       .where("from_city_id", data.from)
       .where("to_city_id", data.to)
       .where("date", ">", data.date);
@@ -84,7 +85,7 @@ export default class TripsController {
   }
   public async find({ request }: HttpContextContract) {
     const id = await request.param("id");
-    const trip = await Trip.query().where('id',id).preload('driver').first();
+    const trip = await Trip.query().where("id", id).preload("driver").preload("from").preload("to").first();
     return trip;
   }
   public async ownTrips({ auth }: HttpContextContract) {
@@ -108,13 +109,15 @@ export default class TripsController {
     const user = await auth.authenticate();
     const trip = await Trip.find(id);
     if (user && trip) {
-      const reservation = Reservation.create({state:"pending",trip_id:trip.id,passenger_id:user.id});
+      const reservation = Reservation.create({
+        state: "pending",
+        trip_id: trip.id,
+        passenger_id: user.id,
+      });
       return reservation;
     }
   }
   public async changeState({ request, auth }: HttpContextContract) {
-    console.log(request.url);
-
     const user = await auth.authenticate();
     const id = await request.param("id");
     const trip = await Trip.find(id);
@@ -123,11 +126,15 @@ export default class TripsController {
       .query()
       .where("passenger_id", user.id)
       .first();
-    if (trip?.driver_id !== user.id && reservation) {
-      reservation.state = "canceled";
-      reservation.state = "accepted";
-      await trip?.save();
+    if ( reservation) {
+      const url =  request.url();
+      if (url.includes("accept")) {
+        reservation.state = "accepted";
+      } else if (url.includes("cancel")) {
+        reservation.state = "canceled";
+      }
+      await reservation.save();
     }
-    return Trip;
+    return trip;
   }
 }

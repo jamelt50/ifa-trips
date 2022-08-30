@@ -44,7 +44,7 @@ export default class Trip extends BaseModel {
   })
   public to: BelongsTo<typeof City>
 
-  @hasMany(() => Reservation)
+  @hasMany(() => Reservation,{localKey:"id",foreignKey:"trip_id"})
   public reservation: HasMany<typeof Reservation>
 
 
