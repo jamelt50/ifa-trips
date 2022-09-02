@@ -1,20 +1,28 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column,hasOne,HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column,hasOne,HasOne } from '@ioc:Adonis/Lucid/Orm'
 import users from './users'
 import Trip from './Trip'
+import Conversation from './Conversation'
 
 export default class Message extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @hasOne(() => users)
-  public from_id: HasOne<typeof users>
+  @column()
+  public conversation_id: number;
+
+  @column()
+  public from_id: number;
 
   @hasOne(() => users)
-  public to_id: HasOne<typeof users>
+  public from: HasOne<typeof users>
 
-  @hasOne(() => Trip)
-  public trip_id: HasOne<typeof Trip>
+
+  @hasOne(() => Conversation)
+  public conversation: HasOne<typeof Conversation>
+
+  @belongsTo(() => Message)
+  public userTwo: BelongsTo<typeof Message>;
 
   @column()
   public content: string

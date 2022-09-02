@@ -32,15 +32,16 @@ export default class UsersController {
       return profile_pic.errors;
     }
     await profile_pic.moveToDisk("./");
-    const fileUrl = profile_pic.fileName ? process.env.BACK_URL + await Drive.getUrl(profile_pic.fileName):null;
-
+    const fileUrl = profile_pic.fileName
+      ? process.env.BACK_URL + (await Drive.getUrl(profile_pic.fileName))
+      : null;
 
     if (auth.user && fileUrl) {
       const user = auth.user;
       user.name = data.name;
       user.surname = data.surname;
       user.password = data.password;
-      user.profile_pic = fileUrl
+      user.profile_pic = fileUrl;
       await user.save();
       return { user: user };
     }
@@ -91,5 +92,11 @@ export default class UsersController {
   public async authUser({ auth }: HttpContextContract) {
     await auth.use("api").authenticate();
     return { user: auth.user };
+  }
+
+  public async getUser({ auth, request }: HttpContextContract) {
+    const id = await request.param("id");
+    const user = await users.find(id);
+    return user;
   }
 }

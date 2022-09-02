@@ -25,6 +25,7 @@ Route.get('/auth/user', 'UsersController.authUser').middleware('auth')
 Route.post('/logout', 'UsersController.logout').middleware('auth')
 Route.post('/register', 'UsersController.register')
 Route.get('/users', 'UsersController.list').middleware('auth')
+Route.get('/users/find/:id', 'UsersController.getUser').middleware('auth')
 Route.post('/profile/update', 'UsersController.update').middleware('auth')
 
 Route.get('/trips/search', 'TripsController.search')
@@ -39,3 +40,8 @@ Route.post('/trips/accept/:id', 'TripsController.changeState').middleware('auth'
 
 Route.get('/reservations/my-reservations', 'ReservationsController.ownReservations').middleware('auth')
 Route.put('/reservations/cancel/:id', 'ReservationsController.cancel').middleware('auth')
+
+Route.post('/messages/create', 'ChatsController.create').middleware('auth')
+Route.get('/messages/list', 'ChatsController.list').middleware('auth')
+Route.post('/messages/join-room', 'ChatsController.join').middleware('auth')
+Route.post('/messages/send', 'ChatsController.send').middleware('auth')

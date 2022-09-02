@@ -13,7 +13,7 @@ export default class TripsController {
       .preload("driver")
       .where("from_city_id", data.from)
       .where("to_city_id", data.to)
-      .where("date", ">", data.date);
+      .where("date", ">=", data.date);
 
     return { search: trips };
   }
