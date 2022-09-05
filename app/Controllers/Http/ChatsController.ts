@@ -7,12 +7,31 @@ import Ws from "App/Services/Ws";
 export default class ChatsController {
   public async list({ auth }: HttpContextContract) {
     const user = await auth.authenticate();
-    const conversations = await Conversation.query()
+    let conversations = await Conversation.query()
       .where("user_one_id", user.id)
       .orWhere("user_two_id", user.id)
       .preload("userOne")
       .preload("userTwo")
-      .preload("messages");
+      .preload("messages", (message) => {
+        message.orderBy("created_at", "asc");
+      });
+
+    conversations = conversations.sort((a, b) => {
+      if (a.messages.length && b.messages.length) {
+        if (a.messages[0].createdAt < b.messages[0].createdAt) {
+          return -1;
+        }
+        if (a.messages[0].createdAt > b.messages[0].createdAt) {
+          return 1;
+        }
+        return 0;
+      } else if (a.messages.length && !b.messages.length) {
+        return -1;
+      } else{
+        return 1;
+      }
+    });
+
     return conversations;
   }
 
@@ -62,5 +81,19 @@ export default class ChatsController {
         }
       });
     }
+  }
+  public async send({ auth, request }: HttpContextContract) {
+    const user = await auth.authenticate();
+    const validations = await schema.create({
+      room: schema.number(),
+      message: schema.string(),
+    });
+    const data = await request.validate({ schema: validations });
+    const message = await Message.create({
+      from_id: user.id,
+      conversation_id: data.room,
+      content: data.message,
+    });
+    Ws.io.in(data.room.toString()).emit("new-message", message);
   }
 }

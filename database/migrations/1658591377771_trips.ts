@@ -6,8 +6,8 @@ export default class extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.bigInteger('from_city_id').unsigned().references('cities.code')
-      table.bigInteger('to_city_id').unsigned().references('cities.code')
+      table.string('from_city_id').references('cities.code')
+      table.string('to_city_id').references('cities.code')
       table.integer('seats')
       table.time('trip_time')
       table.string('description')

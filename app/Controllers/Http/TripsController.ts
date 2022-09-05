@@ -9,13 +9,18 @@ import { geoCity } from "App/Types/geoCity";
 export default class TripsController {
   public async search({ request }: HttpContextContract) {
     const data = request.qs();
+    const page = data.page ? data.page : 1;
+
+
     const trips = await Trip.query()
       .preload("driver")
       .where("from_city_id", data.from)
       .where("to_city_id", data.to)
-      .where("date", ">=", data.date);
+      .where("date", ">=", data.date)
+      .where("seats", ">=", data.seats)
+      .paginate(page, 20);
 
-    return { search: trips };
+    return trips;
   }
   public async create({ request, auth, response }: HttpContextContract) {
     const validations = await schema.create({
@@ -68,8 +73,8 @@ export default class TripsController {
       }
     }
     if (from && to) {
-      trip.from_city_id = parseInt(from.code);
-      trip.to_city_id = parseInt(to.code);
+      trip.from_city_id = from.code;
+      trip.to_city_id = to.code;
       trip.date = data.date;
       trip.description = data.description;
       trip.price = data.price;
@@ -85,7 +90,12 @@ export default class TripsController {
   }
   public async find({ request }: HttpContextContract) {
     const id = await request.param("id");
-    const trip = await Trip.query().where("id", id).preload("driver").preload("from").preload("to").first();
+    const trip = await Trip.query()
+      .where("id", id)
+      .preload("driver")
+      .preload("from")
+      .preload("to")
+      .first();
     return trip;
   }
   public async ownTrips({ auth }: HttpContextContract) {
@@ -126,8 +136,8 @@ export default class TripsController {
       .query()
       .where("passenger_id", user.id)
       .first();
-    if ( reservation) {
-      const url =  request.url();
+    if (reservation) {
+      const url = request.url();
       if (url.includes("accept")) {
         reservation.state = "accepted";
       } else if (url.includes("cancel")) {

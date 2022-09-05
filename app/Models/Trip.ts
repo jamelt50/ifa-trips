@@ -12,10 +12,10 @@ export default class Trip extends BaseModel {
   public driver_id: number
 
   @column()
-  public from_city_id: number
+  public from_city_id: string
 
   @column()
-  public to_city_id: number
+  public to_city_id: string
 
   @column()
   public seats: number

@@ -7,18 +7,26 @@ public async run () {
       {
         email: 'virk@adonisjs.com',
         password: 'secret',
+        name: 'charles',
+        surname: 'louaazo',
       },
       {
         email: 'romain@adonisjs.com',
-        password: 'supersecret'
+        password: 'secret',
+        name: 'romain',
+        surname: 'ueto',
       },
       {
-        email: 'vitk@adonisjs.com',
+        email: 'vitek@adonisjs.com',
         password: 'secret',
+        name: 'vitek',
+        surname: 'agot',
       },
       {
         email: 'roain@adonisjs.com',
-        password: 'supersecret'
+        password: 'secret',
+        name: 'pierre',
+        surname: 'lougo',
       }
 
     ])
