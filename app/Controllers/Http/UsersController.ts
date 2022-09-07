@@ -37,7 +37,7 @@ export default class UsersController {
       }
     }
 
-    if (auth.user) {
+    if (user) {
       user.name = data.name;
       if (data.password) {
         user.surname = data.surname;

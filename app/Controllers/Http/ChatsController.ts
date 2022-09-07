@@ -60,6 +60,7 @@ export default class ChatsController {
       await conversation.load("userOne");
       await conversation.load("userTwo");
 
+
       Ws.io
         .in(trip.driver_id.toString())
         .emit("new-conversation", conversation);
