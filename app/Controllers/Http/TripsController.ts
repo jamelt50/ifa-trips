@@ -9,15 +9,21 @@ import { geoCity } from "App/Types/geoCity";
 export default class TripsController {
   public async search({ request }: HttpContextContract) {
     const data = request.qs();
+
     const page = data.page ? data.page : 1;
-
-
     const trips = await Trip.query()
       .preload("driver")
+      .preload("from")
+      .preload("to")
       .where("from_city_id", data.from)
       .where("to_city_id", data.to)
       .where("date", ">=", data.date)
-      .where("seats", ">=", data.seats)
+      .andWhere(
+        "date",
+        "<=",
+        DateTime.fromSQL(data.date).plus({ day: 1 }).toString()
+      )
+      .where("seats", ">=", data.people)
       .paginate(page, 20);
 
     return trips;
@@ -130,12 +136,9 @@ export default class TripsController {
   public async changeState({ request, auth }: HttpContextContract) {
     const user = await auth.authenticate();
     const id = await request.param("id");
-    const trip = await Trip.find(id);
-    const reservation = await trip
-      ?.related("reservation")
-      .query()
-      .where("passenger_id", user.id)
-      .first();
+
+    const reservation = await Reservation.find(id);
+
     if (reservation) {
       const url = request.url();
       if (url.includes("accept")) {
@@ -144,7 +147,14 @@ export default class TripsController {
         reservation.state = "canceled";
       }
       await reservation.save();
+      const trip = await Trip.query()
+        .where("id", reservation?.trip_id)
+        .preload("driver")
+        .preload("from")
+        .preload("reservation")
+        .preload("to")
+        .first();
+      return trip;
     }
-    return trip;
   }
 }

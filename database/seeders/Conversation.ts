@@ -12,8 +12,6 @@ export default class extends BaseSeeder {
 
     const trip1 = await Trip.find("1");
     const trip2 = await Trip.find("2");
-    const trip3 = await Trip.find("3");
-    const trip4 = await Trip.find("4");
     Conversation.createMany([
       {
         user_one_id: user1 ? user1.id : 1,

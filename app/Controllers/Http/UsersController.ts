@@ -9,14 +9,12 @@ export default class UsersController {
 
     return { users: user };
   }
-  public async findOne(ctx: HttpContextContract) {
-    // const user = await users.all();
-    return { users: ctx };
-  }
+
   public async update({ request, response, auth }: HttpContextContract) {
+    const user = await auth.authenticate();
     const validations = await schema.create({
       name: schema.string({}),
-      password: schema.string({}, [rules.confirmed()]),
+      password: schema.string.optional({}, [rules.confirmed()]),
       surname: schema.string({}),
     });
     const data = await request.validate({ schema: validations });
@@ -25,23 +23,27 @@ export default class UsersController {
       extnames: ["jpg", "png", "jpeg"],
     });
 
-    if (!profile_pic) {
-      return;
+    if (profile_pic) {
+      if (!profile_pic.isValid) {
+        return profile_pic.errors;
+      }
+      await profile_pic.moveToDisk("./");
+      const fileUrl = profile_pic.fileName
+        ? process.env.BACK_URL + (await Drive.getUrl(profile_pic.fileName))
+        : null;
+      if (fileUrl) {
+        Drive.delete(user.profile_pic);
+        user.profile_pic = fileUrl;
+      }
     }
-    if (!profile_pic.isValid) {
-      return profile_pic.errors;
-    }
-    await profile_pic.moveToDisk("./");
-    const fileUrl = profile_pic.fileName
-      ? process.env.BACK_URL + (await Drive.getUrl(profile_pic.fileName))
-      : null;
 
-    if (auth.user && fileUrl) {
-      const user = auth.user;
+    if (auth.user) {
       user.name = data.name;
-      user.surname = data.surname;
-      user.password = data.password;
-      user.profile_pic = fileUrl;
+      if (data.password) {
+        user.surname = data.surname;
+        user.password = data.password;
+      }
+
       await user.save();
       return { user: user };
     }
@@ -95,6 +97,7 @@ export default class UsersController {
   }
 
   public async getUser({ auth, request }: HttpContextContract) {
+    await auth.use("api").authenticate();
     const id = await request.param("id");
     const user = await users.find(id);
     return user;

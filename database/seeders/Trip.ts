@@ -18,7 +18,7 @@ export default class extends BaseSeeder {
         trip_time: DateTime.now(),
         driver_id: user1 ? user1.id : 2,
         price: 30,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
@@ -29,7 +29,7 @@ export default class extends BaseSeeder {
         trip_time: DateTime.now(),
         driver_id: user2 ? user2.id : 2,
         price: 40,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
@@ -40,7 +40,7 @@ export default class extends BaseSeeder {
         trip_time: DateTime.now(),
         driver_id: user3 ? user3.id : 2,
         price: 14,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
@@ -51,7 +51,7 @@ export default class extends BaseSeeder {
         trip_time: DateTime.now(),
         driver_id: user4 ? user4.id : 2,
         price: 13,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
@@ -62,40 +62,40 @@ export default class extends BaseSeeder {
         trip_time: DateTime.now(),
         driver_id: user1 ? user1.id : 2,
         price: 30,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
       {
         from_city_id: "2A115",
-        to_city_id:  "77195",
+        to_city_id: "77195",
         seats: 3,
         trip_time: DateTime.now(),
         driver_id: user2 ? user2.id : 2,
         price: 40,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
       {
         from_city_id: "2A115",
-        to_city_id:  "77195",
+        to_city_id: "77195",
         seats: 1,
         trip_time: DateTime.now(),
         driver_id: user3 ? user3.id : 2,
         price: 14,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },
       {
         from_city_id: "18096",
-        to_city_id:  "77195",
+        to_city_id: "77195",
         seats: 1,
         trip_time: DateTime.now(),
         driver_id: user4 ? user4.id : 2,
         price: 13,
-        date:DateTime.fromFormat('2022-10-04 13:34:05','YYYY-MM-DD hh:mm:ss'),
+        date: DateTime.now().plus({day:20}),
         description:
           "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée",
       },

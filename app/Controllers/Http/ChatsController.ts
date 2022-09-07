@@ -27,7 +27,7 @@ export default class ChatsController {
         return 0;
       } else if (a.messages.length && !b.messages.length) {
         return -1;
-      } else{
+      } else {
         return 1;
       }
     });
@@ -45,7 +45,8 @@ export default class ChatsController {
     const data = await request.validate({ schema: validations });
 
     const trip = await Trip.find(data.trip_id);
-    if (trip) {
+
+    if (trip && trip.driver_id != userFrom.id) {
       const conversation = await Conversation.create({
         user_one_id: trip.driver_id,
         user_two_id: userFrom.id,
@@ -56,7 +57,6 @@ export default class ChatsController {
         conversation_id: conversation.id,
         content: data.message,
       });
-      await conversation.load("userOne");
       await conversation.load("userOne");
       await conversation.load("userTwo");
 
@@ -82,18 +82,23 @@ export default class ChatsController {
       });
     }
   }
-  public async send({ auth, request }: HttpContextContract) {
+  public async send({ auth, request, response }: HttpContextContract) {
     const user = await auth.authenticate();
     const validations = await schema.create({
       room: schema.number(),
       message: schema.string(),
     });
     const data = await request.validate({ schema: validations });
-    const message = await Message.create({
-      from_id: user.id,
-      conversation_id: data.room,
-      content: data.message,
-    });
-    Ws.io.in(data.room.toString()).emit("new-message", message);
+    const conversation = await Conversation.find(data.room);
+
+      const message = await Message.create({
+        from_id: user.id,
+        conversation_id: data.room,
+        content: data.message,
+      });
+      Ws.io.in(data.room.toString()).emit("new-message", message);
+
+      response.send(401);
+
   }
 }
