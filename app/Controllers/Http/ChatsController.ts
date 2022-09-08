@@ -52,28 +52,30 @@ export default class ChatsController {
         user_two_id: userFrom.id,
         trip_id: trip.id,
       });
-      const message = await Message.create({
+     await conversation.related("messages").create({
         from_id: userFrom.id,
         conversation_id: conversation.id,
         content: data.message,
       });
       await conversation.load("userOne");
       await conversation.load("userTwo");
+      await conversation.load("messages");
 
 
       Ws.io
-        .in(trip.driver_id.toString())
+        .in(conversation.userOne.id.toString() + conversation.userOne.email)
+        .in(conversation.userTwo.id.toString() + conversation.userTwo.email)
         .emit("new-conversation", conversation);
     }
   }
   public async join({ auth, request }: HttpContextContract) {
     const user = await auth.authenticate();
     const validations = await schema.create({
-      rooms: schema.array().members(schema.number()),
+      rooms: schema.array().members(schema.string()),
       socket: schema.string(),
     });
     const data = await request.validate({ schema: validations });
-    Ws.io.in(data.socket).socketsJoin(user.id.toString());
+    Ws.io.in(data.socket).socketsJoin(user.id.toString() + user.email);
     if (data.rooms.length) {
       data.rooms.forEach(async (room) => {
         const conversation = await Conversation.find(room);
@@ -92,14 +94,13 @@ export default class ChatsController {
     const data = await request.validate({ schema: validations });
     const conversation = await Conversation.find(data.room);
 
-      const message = await Message.create({
-        from_id: user.id,
-        conversation_id: data.room,
-        content: data.message,
-      });
-      Ws.io.in(data.room.toString()).emit("new-message", message);
+    const message = await Message.create({
+      from_id: user.id,
+      conversation_id: data.room,
+      content: data.message,
+    });
+    Ws.io.in(data.room.toString()).emit("new-message", message);
 
-      response.send(401);
-
+    response.send(401);
   }
 }
